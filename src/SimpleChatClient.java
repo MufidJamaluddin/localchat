@@ -8,8 +8,10 @@ import java.awt.event.*;
 
 public class SimpleChatClient
 {
+    String username=null;
+    JLabel label;
     JTextArea incoming;
-    JTextField outgoing;
+    JTextField outgoing, tf_username;
     BufferedReader reader;
     PrintWriter writer;
     Socket sock;
@@ -24,15 +26,22 @@ public class SimpleChatClient
         JScrollPane qScroller = new JScrollPane(incoming);
         qScroller.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
         qScroller.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        tf_username = new JTextField(10);
+        label = new JLabel();
+        label.setText("Username : ");
         outgoing = new JTextField(20);
         JButton sendButton = new JButton("Send");
+        JButton setUsernameButton = new JButton("Set");
         sendButton.addActionListener(new SendButtonListener());
+        setUsernameButton.addActionListener(new SetUsernameButtonListener());
+        mainPanel.add(label);
+        mainPanel.add(tf_username);
+        mainPanel.add(setUsernameButton);
         mainPanel.add(qScroller);
         mainPanel.add(outgoing);
         mainPanel.add(sendButton);
         frame.getContentPane().add(BorderLayout.CENTER, mainPanel);
         setUpNetworking();
-        
         Thread readerThread = new Thread(new IncomingReader());
         readerThread.start();
         
@@ -58,7 +67,7 @@ public class SimpleChatClient
     public class SendButtonListener implements ActionListener {
         public void actionPerformed(ActionEvent ev) {
             try {
-                writer.println(outgoing.getText());
+                writer.println(username + " : " + outgoing.getText());
                 writer.flush();
                 
             }
@@ -67,6 +76,13 @@ public class SimpleChatClient
             }
             outgoing.setText("");
             outgoing.requestFocus();
+        }
+    }
+    
+    public class SetUsernameButtonListener implements ActionListener {
+        public void actionPerformed(ActionEvent ev) {
+            username = tf_username.getText();
+            tf_username.setEditable(false);
         }
     }
     
