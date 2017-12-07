@@ -1,2 +1,7 @@
-gerry : lala
-gerry : aye
+gerry : hi
+mufid : halo
+mufid : apa kabar
+gerry : baik
+jeremia : bro
+jeremia : apa kabar
+wira : baik bro
