@@ -1,46 +1,65 @@
-//package chap15;
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package id.jtk.polban.ac.id.localchat;
+
+/**
+ *
+ * 
+ */
 import java.io.*;
 import java.net.*;
 import java.util.*;
 
 
-public class VerySimpleChatServer
+public class Server
 {
     ArrayList clientOutputStreams;
     
+    /**
+     * Class untuk menghandle cient
+     */
     public class ClientHandler implements Runnable {
         BufferedReader reader;
         Socket sock;
         
-        public ClientHandler(Socket clientSOcket) {
+        public ClientHandler(Socket clientSOcket) 
+        {
             try {
                 sock = clientSOcket;
                 InputStreamReader isReader = new InputStreamReader(sock.getInputStream());
                 reader = new BufferedReader(isReader);
                 
-            } catch (Exception ex) { ex.printStackTrace(); }
+            } catch (IOException ex) { ex.printStackTrace(); }
         }
         
-        public void run() {
+        @Override
+        public void run() 
+        {
             String message;
             try {
                 while ((message = reader.readLine()) != null) {
                     System.out.println("read " + message);
                     tellEveryone(message);
                 }
-            } catch (Exception ex) { ex.printStackTrace(); }
+            } catch (IOException ex) { ex.printStackTrace(); }
         }
     }
     
-    public static void main(String[] args) {
-        new VerySimpleChatServer().go();
+    public static void main(String[] args) 
+    {
+        new Server().go();
     }
     
-    public void go() {
+    public void go() 
+    {
         clientOutputStreams = new ArrayList();
         try {
             ServerSocket serverSock = new ServerSocket(5000);
-            while(true) {
+            while(true) 
+            {
                 Socket clientSocket = serverSock.accept();
                 PrintWriter writer = new PrintWriter(clientSocket.getOutputStream());
                 clientOutputStreams.add(writer);
@@ -52,9 +71,15 @@ public class VerySimpleChatServer
         } catch (Exception ex) { ex.printStackTrace(); }
     }
     
-    public void tellEveryone(String message) {
+    /**
+     * Mengirimkan pesan ke Client
+     * @param message 
+     */
+    public void tellEveryone(String message) 
+    {
         Iterator it = clientOutputStreams.iterator();
-        while (it.hasNext()) {
+        while (it.hasNext()) 
+        {
             try {
                 PrintWriter writer = (PrintWriter) it.next();
                 writer.println(message);

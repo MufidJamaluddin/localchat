@@ -1,9 +1,12 @@
-package chap15;
+package id.jtk.polban.ac.id.localchat;
 import java.io.*;
 import java.net.*;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.ArrayList;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 
 public class SimpleChatClient
@@ -15,9 +18,22 @@ public class SimpleChatClient
     BufferedReader reader;
     PrintWriter writer;
     Socket sock;
+    ArrayList<String> history;
     
-    public void go() {
-        JFrame frame = new JFrame("Ludicrously Simple Chat Client");
+    /**
+     * Kosntruktor
+     */
+    public SimpleChatClient()
+    {
+        this.history = new ArrayList<>();
+    }
+    
+    /**
+     * Menu
+     */
+    public void go() 
+    {
+        JFrame frame = new JFrame("Chat Client");
         JPanel mainPanel = new JPanel();
         incoming = new JTextArea(15, 50);
         incoming.setLineWrap(true);
@@ -50,7 +66,11 @@ public class SimpleChatClient
         
     }
     
-    private void setUpNetworking() {
+    /**
+     * Set Jaringan
+     */
+    private void setUpNetworking() 
+    {
         try {
             sock = new Socket("127.0.0.1", 5000);
             InputStreamReader streamReader = new InputStreamReader(sock.getInputStream());
@@ -64,8 +84,14 @@ public class SimpleChatClient
         }
     }
     
-    public class SendButtonListener implements ActionListener {
-        public void actionPerformed(ActionEvent ev) {
+    /**
+     * Aksi Tombol Send
+     */
+    public class SendButtonListener implements ActionListener 
+    {
+        @Override
+        public void actionPerformed(ActionEvent ev) 
+        {
             try {
                 writer.println(username + " : " + outgoing.getText());
                 writer.flush();
@@ -79,30 +105,62 @@ public class SimpleChatClient
         }
     }
     
-    public class SetUsernameButtonListener implements ActionListener {
-        public void actionPerformed(ActionEvent ev) {
+    /**
+     * 
+     */
+    public class SetUsernameButtonListener implements ActionListener 
+    {
+        @Override
+        public void actionPerformed(ActionEvent ev) 
+        {
             username = tf_username.getText();
             tf_username.setEditable(false);
         }
     }
     
-    public static void main(String[] args) {
+    public static void main(String[] args) 
+    {
         new SimpleChatClient().go();
     }
     
-    class IncomingReader implements Runnable {
-        public void run() {
+    /**
+     * Save History
+     */
+    public void saveHistory()
+    {
+        try (PrintWriter outTextFile = new PrintWriter("chathistory.txt")) 
+        {
+            this.history.forEach(outTextFile::println);
+            outTextFile.close();
+        } 
+        catch (FileNotFoundException ex) 
+        {
+            Logger.getLogger(SimpleChatClient.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    /**
+     * Thread buat membaca message dari server
+     */
+    class IncomingReader implements Runnable 
+    {
+        @Override
+        public void run() 
+        {
             String message;
-            try {
-                while ((message = reader.readLine()) != null) {
+            try 
+            {
+                while ((message = reader.readLine()) != null) 
+                {
                     System.out.println("client read " + message);
+                    history.add(message);
                     incoming.append(message + "\n");
                 }
-            } catch (IOException ex)
+            } 
+            catch (IOException ex)
             {
                 ex.printStackTrace();
             }
         }
     }
 }
-
