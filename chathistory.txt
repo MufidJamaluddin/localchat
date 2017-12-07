@@ -5,3 +5,8 @@ gerry : baik
 jeremia : bro
 jeremia : apa kabar
 wira : baik bro
+mufid : hi gerry
+mufid : hi jere
+jere : hi mufid
+gerry98 : hi semua
+wirakw : hi mufid lagi apa ?

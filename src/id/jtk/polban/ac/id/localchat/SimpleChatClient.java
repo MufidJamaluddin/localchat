@@ -47,13 +47,15 @@ public class SimpleChatClient
         tf_username = new JTextField(10);
         label = new JLabel();
         label.setText("Username : ");
-        outgoing = new JTextField(20);
+        outgoing = new JTextField(30);
         JButton sendButton = new JButton("Send");
         JButton setUsernameButton = new JButton("Set");
         JButton saveHistoryButton = new JButton("Save Chat History");
+        JButton openHistoryButton = new JButton("Open Chat History");
         sendButton.addActionListener(new SendButtonListener());
         setUsernameButton.addActionListener(new SetUsernameButtonListener());
         saveHistoryButton.addActionListener(new SaveHistoryButtonListener());
+        openHistoryButton.addActionListener(new OpenHistoryButtonListener());
         mainPanel.add(label);
         mainPanel.add(tf_username);
         mainPanel.add(setUsernameButton);
@@ -61,6 +63,7 @@ public class SimpleChatClient
         mainPanel.add(outgoing);
         mainPanel.add(sendButton);
         mainPanel.add(saveHistoryButton);
+        mainPanel.add(openHistoryButton);
         frame.getContentPane().add(BorderLayout.CENTER, mainPanel);
         setUpNetworking();
         Thread readerThread = new Thread(new IncomingReader());
@@ -129,16 +132,6 @@ public class SimpleChatClient
         public void actionPerformed(ActionEvent ev) 
         {
             //file history ada di folder project dengan nama chathistory.txt
-            /*try (PrintWriter outTextFile = new PrintWriter("chathistory.txt")) 
-            {
-                history.forEach(outTextFile::println);
-                outTextFile.close();
-                incoming.append(">>>>chat saved!\n");
-            } 
-            catch (FileNotFoundException ex) 
-            {
-                Logger.getLogger(SimpleChatClient.class.getName()).log(Level.SEVERE, null, ex);
-            }*/
             try(FileWriter fw = new FileWriter("chathistory.txt", true);
                 BufferedWriter bw = new BufferedWriter(fw);
                 PrintWriter out = new PrintWriter(bw))
@@ -147,6 +140,28 @@ public class SimpleChatClient
                 out.close();
                 incoming.append(">>>>chat saved!\n");
             } catch (IOException e) {
+                
+            }
+        }
+    }
+    
+    public class OpenHistoryButtonListener implements ActionListener 
+    {
+        @Override
+        public void actionPerformed(ActionEvent ev) 
+        {
+            try(BufferedReader br = new BufferedReader(new FileReader("chathistory.txt"))) {
+                StringBuilder sb = new StringBuilder();
+                String line = br.readLine();
+
+                while (line != null) {
+                    sb.append(line);
+                    sb.append(System.lineSeparator());
+                    line = br.readLine();
+                }
+                String everything = sb.toString();
+                incoming.append(everything + ">>>>chat history !\n");
+            }catch (IOException e) {
                 
             }
         }
